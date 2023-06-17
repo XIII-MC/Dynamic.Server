@@ -1,0 +1,5 @@
+name: Dynamic.Server
+version: '${project.version}'
+main: com.xiii.dynamic.server.DynamicServer
+description: Dynamically create servers on your Bungeecord proxy!
+author: XIII___
