@@ -38,7 +38,6 @@ This will create a new server with a maximum RAM allocation of 512 MB, the serve
 
 ## Future features
 
-- Custom server software possibility
 - Custom server IP to link servers on different machines
 - Check if port is not already used based on proxy's config
 - Support Velocity & Waterfall
