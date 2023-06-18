@@ -22,8 +22,6 @@ public class ServerManager {
 
     private final DynamicServer instance;
 
-    private final Collection<String> snapshotVersions = new ArrayList<>();
-
     public ServerManager(final DynamicServer instance) {
         this.instance = instance;
     }
@@ -58,9 +56,7 @@ public class ServerManager {
                 break;
 
             case "Custom":
-                //ask for the download url
-
-                //download custom
+                downloadURL = serverVersion;
 
                 break;
         }
