@@ -100,13 +100,17 @@ public class ServerManager {
         //We won't go further if autoConfig is false, meaning they chose not to configure the server with their proxy
         if (autoConfig) {
 
+            //Pre cache config file
+            final Path path = Paths.get("config.yml"); //proxy config file
+            final String content = new String(Files.readAllBytes(path), charset);
+
             //Pre gen a server.properties file, only online mode and port are required to link it to the proxy
             instance.getLogger().log(Level.INFO, "Installation finished! Configuring server...");
 
             //Find an available port
             boolean availablePort = false;
             int portNumber = 25565;
-            for (int port = 25565; !availablePort; port++) {
+            for (int port = 25565; !availablePort && !content.contains(":" + port); port++) {
                 try (Socket ignored = new Socket("localhost", port)) {
                 } catch (final ConnectException e) {
                     availablePort = true;
@@ -124,8 +128,6 @@ public class ServerManager {
 
             instance.getLogger().log(Level.INFO, "Server configuration done! Linking server to the proxy...");
 
-            final Path path = Paths.get("config.yml"); //proxy config file
-            final String content = new String(Files.readAllBytes(path), charset);
             final String addServer = new StringBuilder(content).insert(content.indexOf("servers:"), "servers:" + System.lineSeparator() + "  " + serverName + ":" + System.lineSeparator() + "    " + "motd: 'A Dynamic.Server!'" + System.lineSeparator() + "    " + "address: localhost:" + portNumber + System.lineSeparator() + "    " + "restricted: false").toString().replace("falseservers:", "false");
 
             Files.write(path, addServer.getBytes(charset));
