@@ -14,8 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class ServerManager {
@@ -26,8 +25,16 @@ public class ServerManager {
         this.instance = instance;
     }
 
-    public void createServer(final int xmxRamMB, final String serverName, final String serverSoftware, final String serverVersion, final boolean autoConfig) throws IOException {
+    public void createServer(final int xmxRamMB, final String serverName, final String serverSoftware, final String serverVersion, final boolean autoConfig, String distantIP, int startPort) throws IOException {
 
+        if (Objects.equals(distantIP, "DEFAULT")) {
+            distantIP = "localhost";
+            instance.getLogger().log(Level.WARNING, "No distant IP specified, defaulting to localhost.");
+        }
+        if (startPort == -1) {
+            startPort = 25565;
+            instance.getLogger().log(Level.WARNING, "No start port specified, defaulting to 25565");
+        }
         final Path serverFolder = Paths.get(serverName);
         final Charset charset = StandardCharsets.UTF_8;
         String downloadURL = "UNKNOWN_VERSION";
@@ -109,12 +116,14 @@ public class ServerManager {
 
             //Find an available port
             boolean availablePort = false;
-            int portNumber = 25565;
-            for (int port = 25565; !availablePort && !content.contains(":" + port); port++) {
-                try (Socket ignored = new Socket("localhost", port)) {
+            int portNumber = startPort;
+            for (int port = startPort; !availablePort; port++) {
+                try (Socket ignored = new Socket(distantIP, port)) {
                 } catch (final ConnectException e) {
-                    availablePort = true;
-                    portNumber = port;
+                    if (!content.contains(distantIP + ":" + port)) {
+                        availablePort = true;
+                        portNumber = port;
+                    }
                 }
             }
 
