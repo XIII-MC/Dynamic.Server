@@ -12,7 +12,7 @@ First you will need to have a Bungeecord proxy with a graphical interface (e.g. 
 Simply drop the jar file in the plugins folder of your proxy and restart it (**RESTART Not greload!**)
 After that Dynamic.Server is ready for use, no configuration required!
 
-As of Dynamic.Server 1.0.0 there's only 1 command:
+As of Dynamic.Server 1.0.1 there's only 1 command:
 
 `dcs.createServer <Xmx> <Name> <Server_software> <Server_version> <auto_config>`
 
@@ -28,11 +28,20 @@ auto_config is a boolean (true/false), this will decide if you want or not to co
 
 This command will create a server named "Survival" with a maximum RAM allocation of 1024 MB running on Paper version 1.12.2 and linked to the proxy.
 
+### Custom server softwares
+
+Since Dynamic.Server v1.0.1 you can now use your own server softwares! To do so you simply need to set the server_software argument to "Custom", followed by a **direct** download link to your server's software jar file. Example:
+
+`dcs.createServer 512 Purpur_1.20.1 Custom https://api.purpurmc.org/v2/purpur/1.20.1/latest/download true`
+
+This will create a new server with a maximum RAM allocation of 512 MB, the server will be named "Purpur_1.20.1", we'll ask Dynamic.Server to download our custom server jar by putting "Custom" as the server software that is then followed by the direct download link, finally the server will automaticaly be configured to be added to our proxy.
+
 ## Future features
 
-- Custom server software possibility
 - Custom server IP to link servers on different machines
 - Check if port is not already used based on proxy's config
 - Support Velocity & Waterfall
 - Control and manage the different servers connected to the proxy
 - Access servers terminal on the same terminal as the proxy's
+- Add/Remove an existing server from the proxy
+- Delete/update servers on the proxy
