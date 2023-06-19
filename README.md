@@ -43,3 +43,5 @@ This will create a new server with a maximum RAM allocation of 512 MB, the serve
 - Support Velocity & Waterfall
 - Control and manage the different servers connected to the proxy
 - Access servers terminal on the same terminal as the proxy's
+- Add/Remove an existing server from the proxy
+- Delete/update servers on the proxy
