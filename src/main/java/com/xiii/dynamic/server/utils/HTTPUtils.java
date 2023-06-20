@@ -263,23 +263,19 @@ public class HTTPUtils {
         }
     }
 
-    public static void downloadFileByURL(final String URL, final File downloadPath) {
-        try {
-            final URL url = new URL(URL);
-            final URLConnection conn = url.openConnection();
-            conn.addRequestProperty("User-Agent",
-                    "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
-            conn.connect();
+    public static void downloadFileByURL(final String URL, final File downloadPath) throws IOException {
+        final URL url = new URL(URL);
+        final URLConnection conn = url.openConnection();
+        conn.addRequestProperty("User-Agent",
+                "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0");
+        conn.connect();
 
-            final BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
-            final FileOutputStream fileOutputStream = new FileOutputStream(downloadPath);
-            final byte[] dataBuffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-                fileOutputStream.write(dataBuffer, 0, bytesRead);
-            }
-        } catch (final IOException e) {
-            e.printStackTrace();
+        final BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
+        final FileOutputStream fileOutputStream = new FileOutputStream(downloadPath);
+        final byte[] dataBuffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+            fileOutputStream.write(dataBuffer, 0, bytesRead);
         }
     }
 }
