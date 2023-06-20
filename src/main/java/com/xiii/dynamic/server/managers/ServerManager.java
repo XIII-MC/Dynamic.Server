@@ -2,6 +2,7 @@ package com.xiii.dynamic.server.managers;
 
 import com.xiii.dynamic.server.DynamicServer;
 import com.xiii.dynamic.server.utils.HTTPUtils;
+import sun.net.ConnectionResetException;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -82,7 +83,12 @@ public class ServerManager {
         }
 
         instance.getLogger().log(Level.INFO, "File found! Downloading...");
-        HTTPUtils.downloadFileByURL(downloadURL, new File(serverName + "/server.jar"));
+        try {
+            HTTPUtils.downloadFileByURL(downloadURL, new File(serverName + "/server.jar"));
+        } catch (final ConnectionResetException e) {
+            endSetup(serverName, "Could not connect to the distant server (is the firewall blocking it?) (Connection Reset). Exiting...");
+
+        }
         instance.getLogger().log(Level.INFO, "File downloaded! Installing...");
 
         //Pre setup EULA file to boot up on first start
@@ -105,7 +111,7 @@ public class ServerManager {
         runSh.close();
 
         //We won't go further if autoConfig is false, meaning they chose not to configure the server with their proxy
-        if (autoConfig) {
+        if (autoConfig && (!serverSoftware.equalsIgnoreCase("Bukkit") || !serverSoftware.equalsIgnoreCase("Vanilla"))) {
 
             //Pre cache config file
             final Path path = Paths.get("config.yml"); //proxy config file
@@ -127,6 +133,10 @@ public class ServerManager {
                 }
             }
 
+            if (!availablePort) {
+                endSetup(serverName, "No available port found! Exiting...");
+            }
+
             final String serverProperties = "server-port:" + portNumber + System.lineSeparator() + "online-mode=false";
 
             final BufferedWriter serverPropertiesBw = new BufferedWriter(new FileWriter(serverName + "/server.properties"));
@@ -145,6 +155,8 @@ public class ServerManager {
             instance.getLogger().log(Level.WARNING, "You will need to restart your Proxy in order to finish linking your server!");
         }
 
+        if (autoConfig && (serverSoftware.equalsIgnoreCase("Bukkit") || serverSoftware.equalsIgnoreCase("Vanilla"))) instance.getLogger().log(Level.WARNING,  serverSoftware + " does not support BungeeCord! Please use Spigot or Paper.");
+
         instance.getLogger().log(Level.INFO, "Setup finished! Starting server...");
 
         startServer(serverName);
@@ -158,5 +170,10 @@ public class ServerManager {
         } catch (final IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void endSetup(final String serverName, final String errorMessage) {
+        instance.getLogger().log(Level.SEVERE, errorMessage);
+        new File(serverName).delete();
     }
 }
