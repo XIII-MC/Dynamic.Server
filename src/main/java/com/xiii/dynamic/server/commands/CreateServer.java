@@ -7,13 +7,13 @@ import net.md_5.bungee.api.plugin.Command;
 import java.io.IOException;
 import java.util.logging.Level;
 
-public class ServerCreation extends Command {
+public class CreateServer extends Command {
 
     private final DynamicServer instance;
     private int tempStartPort = -1;
     private String tempDistantIP = "DEFAULT";
 
-    public ServerCreation(final String name, final DynamicServer instance) {
+    public CreateServer(final String name, final DynamicServer instance) {
         super(name);
         this.instance = instance;
     }

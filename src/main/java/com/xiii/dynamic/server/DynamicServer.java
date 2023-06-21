@@ -1,6 +1,6 @@
 package com.xiii.dynamic.server;
 
-import com.xiii.dynamic.server.commands.ServerCreation;
+import com.xiii.dynamic.server.commands.CreateServer;
 import com.xiii.dynamic.server.managers.ServerManager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -17,7 +17,7 @@ public final class DynamicServer extends Plugin {
 
         serverManager = new ServerManager(this);
 
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new ServerCreation("dcs.createServer", this));
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new CreateServer("dcs.createServer", this));
 
         this.getLogger().log(Level.INFO, "Plugin loaded!");
     }
