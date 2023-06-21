@@ -4,6 +4,7 @@ import com.xiii.dynamic.server.DynamicServer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -33,6 +34,8 @@ public class CreateServer extends Command {
                     instance.getServerManager().createServer(Integer.parseInt(args[0]), args[1], args[2], args[3], Boolean.parseBoolean(args[4]), tempDistantIP, tempStartPort);
                 } catch (final IOException e) {
                     e.printStackTrace();
+                    instance.getLogger().log(Level.SEVERE, "Process exited due to an exception! Canceling server creation...");
+                    new File(args[1]).delete();
                 }
                 instance.getLogger().log(Level.INFO, "Process finished in " + (System.currentTimeMillis() - startTime) + "ms!");
 
