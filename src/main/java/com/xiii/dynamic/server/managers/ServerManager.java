@@ -22,6 +22,8 @@ public class ServerManager {
 
     private final DynamicServer instance;
 
+    private boolean isVanillaProxy = false;
+
     public ServerManager(final DynamicServer instance) {
         this.instance = instance;
     }
@@ -82,6 +84,12 @@ public class ServerManager {
             return;
         }
 
+        if (serverSoftware.equalsIgnoreCase("Vanilla") && autoConfig) {
+            isVanillaProxy = true;
+            downloadURL = "https://dev.me1312.net/jenkins/job/VanillaCord/lastSuccessfulBuild/artifact/artifacts/VanillaCord.jar";
+            instance.getLogger().log(Level.WARNING, "Normal Vanilla cannot be linked to a proxy. Using VanillaCord.");
+        }
+
         instance.getLogger().log(Level.INFO, "File found! Downloading...");
         try {
             HTTPUtils.downloadFileByURL(downloadURL, new File(serverName + "/server.jar"));
@@ -91,27 +99,40 @@ public class ServerManager {
         }
         instance.getLogger().log(Level.INFO, "File downloaded! Installing...");
 
+        //Create the out folder for VanillaCord
+        if (isVanillaProxy) new File(serverName + "/out").mkdir();
+
         //Pre setup EULA file to boot up on first start
-        final BufferedWriter eula = new BufferedWriter(new FileWriter(serverName + "/eula.txt"));
+        final BufferedWriter eula = new BufferedWriter(new FileWriter(isVanillaProxy ? serverName + "/out/eula.txt" : serverName + "/eula.txt"));
 
         eula.write("eula=true");
+
+        eula.flush();
 
         eula.close();
 
         //Setup run.bat/sh files
-        final String startUpCommand = "@echo off" + "\n" + " java -jar -Xmx" + xmxRamMB + "M" + " server.jar";
+        String startUpCommand;
+
+        //Vanilla needs a little special run.bat/sh
+        if (isVanillaProxy) {
+            startUpCommand = "@echo off" + System.lineSeparator() + "java -jar -Xmx" + xmxRamMB + "M" + " server.jar " + serverVersion;
+        } else startUpCommand = "@echo off" + System.lineSeparator() + "java -jar -Xmx" + xmxRamMB + "M" + " server.jar";
 
         final BufferedWriter runBat = new BufferedWriter(new FileWriter(serverName + "/run.bat"));
         final BufferedWriter runSh = new BufferedWriter(new FileWriter(serverName + "/run.sh"));
 
-        runBat.write(startUpCommand);
-        runSh.write(startUpCommand);
+        runBat.write(isVanillaProxy ? startUpCommand + System.lineSeparator() + "cd out" + System.lineSeparator() + "java -jar -Xmx" + xmxRamMB + "M " + serverVersion + "-bungee.jar" : startUpCommand);
+        runSh.write(isVanillaProxy ? startUpCommand + System.lineSeparator() + "cd out" + System.lineSeparator() + "java -jar -Xmx" + xmxRamMB + "M " + serverVersion + "-bungee.jar" : startUpCommand);
+
+        runBat.flush();
+        runSh.flush();
 
         runBat.close();
         runSh.close();
 
         //We won't go further if autoConfig is false, meaning they chose not to configure the server with their proxy
-        if (autoConfig && (!serverSoftware.equalsIgnoreCase("Bukkit") || !serverSoftware.equalsIgnoreCase("Vanilla"))) {
+        if (autoConfig && (!serverSoftware.equalsIgnoreCase("Bukkit"))) {
 
             //Pre cache config file
             final Path path = Paths.get("config.yml"); //proxy config file
@@ -137,13 +158,22 @@ public class ServerManager {
                 endSetup(serverName, "No available port found! Exiting...");
             }
 
-            final String serverProperties = "server-port:" + portNumber + System.lineSeparator() + "online-mode=false";
+            final BufferedWriter serverPropertiesBw = new BufferedWriter(new FileWriter(isVanillaProxy ? serverName + "/out/server.properties" : serverName + "/server.properties"));
 
-            final BufferedWriter serverPropertiesBw = new BufferedWriter(new FileWriter(serverName + "/server.properties"));
-
-            serverPropertiesBw.write(serverProperties);
+            serverPropertiesBw.write("server-port:" + portNumber + System.lineSeparator() + "online-mode=false");
 
             serverPropertiesBw.close();
+
+            //Enable bungeecord in spigot.yml
+            if (!serverSoftware.equalsIgnoreCase("Vanilla") && !serverSoftware.equalsIgnoreCase("Bukkit")) {
+                final BufferedWriter spigotYml = new BufferedWriter(new FileWriter(isVanillaProxy ? serverName + "/out/spigot.yml" : serverName + "/spigot.yml"));
+
+                spigotYml.write("  bungeecord=true");
+
+                spigotYml.flush();
+
+                spigotYml.close();
+            }
 
             instance.getLogger().log(Level.INFO, "Server configuration done! Linking server to the proxy...");
 
@@ -155,7 +185,7 @@ public class ServerManager {
             instance.getLogger().log(Level.WARNING, "You will need to restart your Proxy in order to finish linking your server!");
         }
 
-        if (autoConfig && (serverSoftware.equalsIgnoreCase("Bukkit") || serverSoftware.equalsIgnoreCase("Vanilla"))) instance.getLogger().log(Level.WARNING,  serverSoftware + " does not support BungeeCord! Please use Spigot or Paper.");
+        if (autoConfig && (serverSoftware.equalsIgnoreCase("Bukkit"))) instance.getLogger().log(Level.WARNING,  serverSoftware + " does not support BungeeCord! Please use Spigot, Paper or Vanilla.");
 
         instance.getLogger().log(Level.INFO, "Setup finished! Starting server...");
 
