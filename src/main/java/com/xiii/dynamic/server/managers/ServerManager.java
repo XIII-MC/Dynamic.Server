@@ -162,6 +162,8 @@ public class ServerManager {
 
             serverPropertiesBw.write("server-port:" + portNumber + System.lineSeparator() + "online-mode=false");
 
+            serverPropertiesBw.flush();
+
             serverPropertiesBw.close();
 
             //Enable bungeecord in spigot.yml
