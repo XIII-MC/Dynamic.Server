@@ -41,5 +41,7 @@ public class CreateServer extends Command {
 
             } else sender.sendMessage("Wrong arguments. Usage: dcs.createServer <Xmx> <Name> <Server_software> <Server_version> <auto_config> <distant_ip> <start_port>");
         }
+        tempStartPort = -1;
+        tempDistantIP = null;
     }
 }
