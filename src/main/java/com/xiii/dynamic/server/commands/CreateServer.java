@@ -22,7 +22,7 @@ public class CreateServer extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
 
-        if (sender.hasPermission("Dynamic.Server.ServerCreation")) {
+        if (sender.hasPermission("Dynamic.Server.CreateServer")) {
 
             if (args.length >= 5) {
 
