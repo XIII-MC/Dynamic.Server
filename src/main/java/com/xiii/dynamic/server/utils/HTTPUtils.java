@@ -1,6 +1,9 @@
 package com.xiii.dynamic.server.utils;
 
+import sun.net.ConnectionResetException;
+
 import java.io.*;
+import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
@@ -263,7 +266,7 @@ public class HTTPUtils {
         }
     }
 
-    public static void downloadFileByURL(final String URL, final File downloadPath) throws IOException {
+    public static void downloadFileByURL(final String URL, final File downloadPath) throws ConnectionResetException, IOException {
         final URL url = new URL(URL);
         final URLConnection conn = url.openConnection();
         conn.addRequestProperty("User-Agent",
