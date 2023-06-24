@@ -1,4 +1,4 @@
-package com.xiii.dynamic.server.commands;
+package com.xiii.dynamic.server.commands.proxy;
 
 import com.xiii.dynamic.server.DynamicServer;
 import net.md_5.bungee.api.CommandSender;
@@ -41,6 +41,8 @@ public class ConfigureProxy extends Command {
                     content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
                 } catch (final IOException ignored) {}
 
+                instance.getLogger().log(Level.INFO, "Updating proxy's configuration! Please wait...");
+
                 if (args.length >= 2) tempIpForward = args[1];
                 if (args.length >= 3) tempOnlineMode = args[2];
                 if (args.length >= 4) tempStartPort = args[3];
@@ -64,6 +66,5 @@ public class ConfigureProxy extends Command {
         tempIpForward = null;
         tempOnlineMode = null;
         tempStartPort = null;
-
     }
 }
