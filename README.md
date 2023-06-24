@@ -3,45 +3,56 @@ Dynamically create servers for your Bungeecord proxy under 10 seconds!
 
 ## What is Dynamic.Server ?
 
-Dynamic.Server is a plugin made for Bungeecord (not Velocity nor Waterfall for now...), it can help you create servers and automaticaly configure them to be linked to your proxy, no need to pre download the server software you want or waste time searching for a version you want, Dynamic.Server can automaticaly download, install and configure (or not) a majority of server softwares and version like Vanilla, Spigot, Bukkit or even Paper.
+Dynamic.Server is a plugin made for Bungeecord (not Velocity nor Waterfall for now...), it can do multiple tasks on your proxy such as: Configure your proxy, create new servers (Vanilla, Spigot, Bukkit, Paper and even Custom server jars!) and automaticaly download, install and configure them. It can automaticaly link new servers to the proxy (even Vanilla!), you can even create servers for distant non-local IPs!
 
 ## How to use Dynamic.Server ?
 
 First you will need to have a Bungeecord proxy with a graphical interface (e.g. through a terminal or cmd)
-Simply drop the jar file in the plugins folder of your proxy and restart it (**RESTART Not greload!**)
+Simply drop the jar file in the plugins folder of your proxy and restart it (**RESTART not greload!**)
 After that Dynamic.Server is ready for use, no configuration required!
 
-As of Dynamic.Server 1.1.0 there's only 1 command:
+### Create a new server *(dcs.createServer)*
 
-`dcs.createServer <Xmx> <Name> <Server_software> <Server_version> <auto_config>`
+`dcs.createServer <Xmx> <Name> <Server_software> <Server_version> <auto_config> (distant_ip) (start_port)`
 
-Xmx is the maximum memory you will allocate to the server, the value to enter is in MB.
-Name is the name you wanna give you server, it will be used to connect to your server but also as the folder name to store your server.
-Server_software is the software you wanna use for your server. (e.g. Vanilla, Spigot, Bukkit or Paper)
-Server_version is the version you want. (e.g. 1.8.8, 1.17, 1.20.1) Alpha, pre-releases and old builds are supported for Vanilla.
-auto_config is a boolean (true/false), this will decide if you want or not to configure and link the server to your proxy. If set to false, basic configuration will be done such as the EULA however if set to true the server's online-mode and server-port will be configured, the server will also be added to the proxy's config.yml.
+**Xmx**: The maximum memory allocation you will give to the server, the value is in megabytes (only the value needs to be entered, no need to put M or G).
+**Name**: The name you will give to the server, this name will be used for the server folder but also in the configuration files (e.g. Survival, My_Awesome_Server).
+**Server Software**: The server software you would like to you use (Vanilla, Bukkit, Spigot, Paper), if you want to use a jar that is not in that list put 'Custom'.
+**Server Version**: The version of the server software (e.g. 1.7.10, 1.8.9, 1.16.5...), if you are using the 'Custom' argument for the server software please put a direct download link to the jar file here.
+**Auto Config**: If you want your server to be automaticaly linked to your proxy (true/false) (**NOTE: Currently Bukkit servers are not linkable to the proxy however Vanilla is (Thanks to VanillaCord!)**)
 
-### Example:
+(Optional) *Distant IP*: The public IP of the machine the server will be running (e.g. 192.168.0.1)
+(Optional) *Start Port*: From which port should Dynamic.Server try getting an available port (if the port is taken, it will try a higher port)
 
-`dcs.createServer 1024 Survival Paper 1.12.2 true`
+### Configure your proxy *(dcs.configureProxy, dcs.setDefaultServer, dcs.toggleIPForward, dcs.toggleOnlineMode, dcs.changeProxyPort, dcs.removeForcedSettings)*
 
-This command will create a server named "Survival" with a maximum RAM allocation of 1024 MB running on Paper version 1.12.2 and linked to the local proxy on any port available after 25565.
+`dcs.configureProxy <default_server> (ip_forward) (online_mode) (start_port)`
 
-### Custom server softwares
+**Default Server**: The name of the server you should first get connected to when connecting to the proxy (e.g. Survival, My_Awesome_Server).
 
-Since Dynamic.Server v1.0.1 you can now use your own server softwares! To do so you simply need to set the server_software argument to "Custom", followed by a **direct** download link to your server's software jar file. Example:
+(Optional) *IP Forward*: If you want IP Forward to be enabled or not (true/false).
+(Optional) *Online Mode*: If you want your proxy to be on online mode or not (accept cracked accounts or not) (true/false).
+(Optional) *Start Port*: From which port should Dynamic.Server try getting an available port (if the port is taken, it will try a higher port) (this changes both query and host ports).
 
-`dcs.createServer 512 Purpur_1.20.1 Custom https://api.purpurmc.org/v2/purpur/1.20.1/latest/download true`
+`dcs.setDefaultServer <default_server>`
 
-This will create a new server with a maximum RAM allocation of 512 MB, the server will be named "Purpur_1.20.1", we'll ask Dynamic.Server to download our custom server jar by putting "Custom" as the server software that is then followed by the direct download link, finally the server will automaticaly be configured to be added to our proxy.
+**Default Server**: The name of the server you should first get connected to when connecting to the proxy (e.g. Survival, My_Awesome_Server).
 
-### Distant servers & Ports
+`dcs.toggleIPForward <true/false>`
 
-With Dynamic.Server v1.1.0 you can now link servers that are on a different network, you can now also choose from which port should the scan start. Example:
+**IP Forward**: If you want IP Forward to be enabled or not (true/false).
 
-`dcs.createServer 2048 Vanilla_1.7.10 Vanilla 1.7.10 true 206.190.175.42 10`
+`dcs.toggleOnlineMode <true/false>`
 
-This will create a server with 2048 MB of maximum RAM allocation called "Vanilla_1.7.10" running on Vanilla v1.7.10, the server will be automaticaly configured to be linked to the proxy, the **public** IP of the distant server will be 206.190.175.42 and it will start searching for available ports starting at port 10 until finding an available one.
+**Online Mode**: If you want your proxy to be on online mode or not (accept cracked accounts or not) (true/false).
+
+`dcs.changeProxyPort <start_port>`
+
+**Start Port**: From which port should Dynamic.Server try getting an available port (if the port is taken, it will try a higher port) (this changes both query and host ports).
+
+`dcs.removeForcedSettings`
+
+This simply removes all 'forced' default BungeeCord settings such as md_5 being in the admin group, or md_5's pvp server as a forced host. This is done automaticaly when doing dcs.configureProxy.
 
 ## Future features
 
