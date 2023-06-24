@@ -1,4 +1,4 @@
-package com.xiii.dynamic.server.commands;
+package com.xiii.dynamic.server.commands.server;
 
 import com.xiii.dynamic.server.DynamicServer;
 import net.md_5.bungee.api.CommandSender;
@@ -39,7 +39,7 @@ public class CreateServer extends Command {
                 }
                 instance.getLogger().log(Level.INFO, "Process finished in " + (System.currentTimeMillis() - startTime) + "ms!");
 
-            } else sender.sendMessage("Wrong arguments. Usage: dcs.createServer <Xmx> <Name> <Server_software> <Server_version> <auto_config> <distant_ip> <start_port>");
+            } else instance.getLogger().log(Level.SEVERE, "Wrong arguments! Usage: dcs.createServer <Xmx> <Name> <Server_software> <Server_version> <auto_config> (distant_ip) (start_port)");
         }
         tempStartPort = -1;
         tempDistantIP = null;
