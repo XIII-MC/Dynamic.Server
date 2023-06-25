@@ -43,7 +43,7 @@ public class ServerManager {
         String downloadURL = "UNKNOWN_VERSION";
 
         //Check if serverSoftware exists and download it
-        switch(serverSoftware) {
+        switch (serverSoftware) {
 
             case "Paper":
                 downloadURL = HTTPUtils.getPaperDownload(serverVersion);
@@ -131,46 +131,44 @@ public class ServerManager {
         runBat.close();
         runSh.close();
 
+        //Pre cache config file
+        final Path path = Paths.get("config.yml"); //proxy config file
+        final String content = new String(Files.readAllBytes(path), charset);
+
+        //Pre gen a server.properties file, only online mode and port are required to link it to the proxy
+        instance.getLogger().log(Level.INFO, "Installation finished! Configuring server...");
+
+        //Find an available port
+        boolean availablePort = false;
+        int portNumber = startPort;
+        for (int port = startPort; !availablePort; port++) {
+            try (Socket ignored = new Socket(distantIP, port)) {
+            } catch (final ConnectException e) {
+                if (!content.contains(distantIP + ":" + port)) {
+                    availablePort = true;
+                    portNumber = port;
+                }
+            }
+        }
+
+        if (!availablePort) endSetup(serverName, "No available port found! Exiting...");
+
+        final BufferedWriter serverPropertiesBw = new BufferedWriter(new FileWriter(isVanillaProxy ? serverName + "/out/server.properties" : serverName + "/server.properties"));
+
+        serverPropertiesBw.write("server-port:" + portNumber + (autoConfig ? System.lineSeparator() + "online-mode=false" : ""));
+
+        serverPropertiesBw.flush();
+
+        serverPropertiesBw.close();
+
         //We won't go further if autoConfig is false, meaning they chose not to configure the server with their proxy
         if (autoConfig && (!serverSoftware.equalsIgnoreCase("Bukkit"))) {
 
-            //Pre cache config file
-            final Path path = Paths.get("config.yml"); //proxy config file
-            final String content = new String(Files.readAllBytes(path), charset);
-
-            //Pre gen a server.properties file, only online mode and port are required to link it to the proxy
-            instance.getLogger().log(Level.INFO, "Installation finished! Configuring server...");
-
-            //Find an available port
-            boolean availablePort = false;
-            int portNumber = startPort;
-            for (int port = startPort; !availablePort; port++) {
-                try (Socket ignored = new Socket(distantIP, port)) {
-                } catch (final ConnectException e) {
-                    if (!content.contains(distantIP + ":" + port)) {
-                        availablePort = true;
-                        portNumber = port;
-                    }
-                }
-            }
-
-            if (!availablePort) {
-                endSetup(serverName, "No available port found! Exiting...");
-            }
-
-            final BufferedWriter serverPropertiesBw = new BufferedWriter(new FileWriter(isVanillaProxy ? serverName + "/out/server.properties" : serverName + "/server.properties"));
-
-            serverPropertiesBw.write("server-port:" + portNumber + System.lineSeparator() + "online-mode=false");
-
-            serverPropertiesBw.flush();
-
-            serverPropertiesBw.close();
-
             //Enable bungeecord in spigot.yml
             if (!serverSoftware.equalsIgnoreCase("Vanilla") && !serverSoftware.equalsIgnoreCase("Bukkit")) {
-                final BufferedWriter spigotYml = new BufferedWriter(new FileWriter(isVanillaProxy ? serverName + "/out/spigot.yml" : serverName + "/spigot.yml"));
+                final BufferedWriter spigotYml = new BufferedWriter(new FileWriter(serverName + "/spigot.yml"));
 
-                spigotYml.write("  bungeecord=true");
+                spigotYml.write("settings:" + System.lineSeparator() + "  bungeecord: true");
 
                 spigotYml.flush();
 
@@ -187,7 +185,7 @@ public class ServerManager {
             instance.getLogger().log(Level.WARNING, "You will need to restart your Proxy in order to finish linking your server!");
         }
 
-        if (autoConfig && (serverSoftware.equalsIgnoreCase("Bukkit"))) instance.getLogger().log(Level.WARNING,  serverSoftware + " does not support BungeeCord! Please use Spigot, Paper or Vanilla.");
+        if (autoConfig && (serverSoftware.equalsIgnoreCase("Bukkit"))) instance.getLogger().log(Level.WARNING, serverSoftware + " does not support BungeeCord! Please use Spigot, Paper or Vanilla.");
 
         instance.getLogger().log(Level.INFO, "Setup finished! Starting server...");
 
