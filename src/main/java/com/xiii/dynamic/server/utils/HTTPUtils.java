@@ -280,5 +280,8 @@ public class HTTPUtils {
         while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
             fileOutputStream.write(dataBuffer, 0, bytesRead);
         }
+        in.close();
+        fileOutputStream.flush();
+        fileOutputStream.close();
     }
 }
