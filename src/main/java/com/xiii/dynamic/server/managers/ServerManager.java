@@ -1,7 +1,9 @@
 package com.xiii.dynamic.server.managers;
 
 import com.xiii.dynamic.server.DynamicServer;
+import com.xiii.dynamic.server.utils.FileUtils;
 import com.xiii.dynamic.server.utils.HTTPUtils;
+import org.zeroturnaround.zip.ZipUtil;
 import sun.net.ConnectionResetException;
 
 import java.io.BufferedWriter;
@@ -42,6 +44,8 @@ public class ServerManager {
         final Charset charset = StandardCharsets.UTF_8;
         String downloadURL = "UNKNOWN_VERSION";
 
+        String content = new String(Files.readAllBytes(Paths.get("config.yml")), charset);
+
         //Check if serverSoftware exists and download it
         switch (serverSoftware) {
 
@@ -72,7 +76,17 @@ public class ServerManager {
         }
 
         if (downloadURL.equalsIgnoreCase("UNKNOWN_VERSION")) {
-            instance.getLogger().log(Level.INFO, serverVersion + " does not exist as a " + serverSoftware + " version! Exiting...");
+            instance.getLogger().log(Level.SEVERE, serverVersion + " does not exist as a " + serverSoftware + " version! Exiting...");
+            return;
+        }
+
+        if (content.contains(serverName)) {
+            instance.getLogger().log(Level.SEVERE, "A server with the same name is already registered in the config! Exiting...");
+            return;
+        }
+
+        if (!serverName.matches("[a-zA-Z]+")) {
+            instance.getLogger().log(Level.SEVERE, "The server name must contain at least 1 letter! Exiting...");
             return;
         }
 
@@ -80,7 +94,7 @@ public class ServerManager {
         try {
             Files.createDirectory(serverFolder);
         } catch (final IOException e) {
-            instance.getLogger().log(Level.SEVERE, "A folder with that same name already exists! Exiting...");
+            endSetup(serverName, "A folder with that same name already exists! Exiting...");
             return;
         }
 
@@ -95,7 +109,6 @@ public class ServerManager {
             HTTPUtils.downloadFileByURL(downloadURL, new File(serverName + "/server.jar"));
         } catch (final ConnectionResetException e) {
             endSetup(serverName, "Could not connect to the distant server (is the firewall blocking it?) (Connection Reset). Exiting...");
-
         }
         instance.getLogger().log(Level.INFO, "File downloaded! Installing...");
 
@@ -133,7 +146,7 @@ public class ServerManager {
 
         //Pre cache config file
         final Path path = Paths.get("config.yml"); //proxy config file
-        final String content = new String(Files.readAllBytes(path), charset);
+        content = new String(Files.readAllBytes(path), charset);
 
         //Pre gen a server.properties file, only online mode and port are required to link it to the proxy
         instance.getLogger().log(Level.INFO, "Installation finished! Configuring server...");
@@ -177,7 +190,7 @@ public class ServerManager {
 
             instance.getLogger().log(Level.INFO, "Server configuration done! Linking server to the proxy...");
 
-            final String addServer = new StringBuilder(content).insert(content.indexOf("servers:"), "servers:" + System.lineSeparator() + "  " + serverName + ":" + System.lineSeparator() + "    " + "motd: 'A Dynamic.Server!'" + System.lineSeparator() + "    " + "address: localhost:" + portNumber + System.lineSeparator() + "    " + "restricted: false").toString().replace("falseservers:", "false");
+            final String addServer = content.replaceAll("servers:", "servers:" + System.lineSeparator() + "  " + serverName + ":" + System.lineSeparator() + "    " + "motd: 'A Dynamic.Server!'" + System.lineSeparator() + "    " + "address: " + distantIP + ":" + portNumber + System.lineSeparator() + "    " + "restricted: false");
 
             Files.write(path, addServer.getBytes(charset));
 
@@ -187,9 +200,24 @@ public class ServerManager {
 
         if (autoConfig && (serverSoftware.equalsIgnoreCase("Bukkit"))) instance.getLogger().log(Level.WARNING, serverSoftware + " does not support BungeeCord! Please use Spigot, Paper or Vanilla.");
 
-        instance.getLogger().log(Level.INFO, "Setup finished! Starting server...");
+        //Zip folder to export it to the distant server
+        if (distantIP != "localhost") {
 
-        startServer(serverName);
+            instance.getLogger().log(Level.INFO, "Exporting server to a zip file! Please wait...");
+
+            if (Files.notExists(Paths.get("exported_servers"))) Files.createDirectory(Paths.get("exported_servers"));
+
+            ZipUtil.pack(new File(serverName), new File("exported_servers/" + serverName + ".zip"));
+
+            FileUtils.deleteDirectory(new File(serverName));
+
+            instance.getLogger().log(Level.INFO, "Exporting done! The file was saved in the 'exported_servers' folder at the root of your proxy.");
+        } else {
+
+            instance.getLogger().log(Level.INFO, "Setup finished! Starting server...");
+
+            startServer(serverName);
+        }
     }
 
     public void startServer(final String serverName) {
