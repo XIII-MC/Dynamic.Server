@@ -57,7 +57,6 @@ This simply removes all 'forced' default BungeeCord settings such as md_5 being 
 
 ## Future features
 
-- Zip distant servers folder and don't autostart them
 - Add an autostart after install option
 - Add a server.properties preset option
 - Support Velocity & Waterfall
