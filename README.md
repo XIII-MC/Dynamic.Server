@@ -20,7 +20,7 @@ After that Dynamic.Server is ready for use, no configuration required!
 **Name**: The name you will give to the server, this name will be used for the server folder but also in the configuration files (e.g. Survival, My_Awesome_Server). <br />
 **Server Software**: The server software you would like to you use (Vanilla, Bukkit, Spigot, Paper), if you want to use a jar that is not in that list put 'Custom'. <br />
 **Server Version**: The version of the server software (e.g. 1.7.10, 1.8.9, 1.16.5...), if you are using the 'Custom' argument for the server software please put a direct download link to the jar file here. <br />
-**Auto Config**: If you want your server to be automaticaly linked to your proxy (true/false) (**NOTE: Currently Bukkit servers are not linkable to the proxy however Vanilla is (Thanks to VanillaCord!)**) <br />
+**Auto Config**: If you want your server to be automaticaly linked to your proxy (true/false) (**NOTE: Currently Bukkit servers are not linkable to the proxy however Vanilla is (Thanks to [VanillaCord](https://github.com/ME1312/VanillaCord/tree/master)!)**) <br />
 
 (Optional) *Distant IP*: The public IP of the machine the server will be running (e.g. 192.168.0.1) <br />
 (Optional) *Start Port*: From which port should Dynamic.Server try getting an available port (if the port is taken, it will try a higher port) <br />
