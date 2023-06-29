@@ -36,6 +36,8 @@ public final class DynamicServer extends Plugin {
 
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new RemoveForcedSettings("dcs.removeForcedSettings", this));
 
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new FixProxy("dcs.fixProxy", this));
+
         this.getLogger().log(Level.INFO, "Plugin loaded!");
     }
 
