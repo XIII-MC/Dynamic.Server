@@ -3,6 +3,7 @@ package com.xiii.dynamic.server.managers;
 import com.xiii.dynamic.server.DynamicServer;
 import com.xiii.dynamic.server.utils.FileUtils;
 import com.xiii.dynamic.server.utils.HTTPUtils;
+import com.xiii.dynamic.server.utils.MiscUtils;
 import org.zeroturnaround.zip.ZipUtil;
 import sun.net.ConnectionResetException;
 
@@ -45,6 +46,7 @@ public class ServerManager {
         String downloadURL = "UNKNOWN_VERSION";
 
         String content = new String(Files.readAllBytes(Paths.get("config.yml")), charset);
+        final String servers = content.substring(content.indexOf("servers:"));
 
         //Check if serverSoftware exists and download it
         switch (serverSoftware) {
@@ -80,12 +82,12 @@ public class ServerManager {
             return;
         }
 
-        if (content.contains(serverName)) {
+        if (servers.contains(serverName + ":")) {
             instance.getLogger().log(Level.SEVERE, "A server with the same name is already registered in the config! Exiting...");
             return;
         }
 
-        if (!serverName.matches("[a-zA-Z]+")) {
+        if (!MiscUtils.containsLetters(serverName)) {
             instance.getLogger().log(Level.SEVERE, "The server name must contain at least 1 letter! Exiting...");
             return;
         }
