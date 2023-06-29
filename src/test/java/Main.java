@@ -15,7 +15,8 @@ public class Main {
         final Path path = Paths.get("D:\\Bureau\\Dynamic.Server\\config.yml"); //proxy config file
         final String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
 
-        final String post = content.replaceAll("ip_forward: " + !Boolean.parseBoolean(ipForward), "ip_forward: " + String.valueOf(Boolean.parseBoolean(ipForward)));
-        Files.write(path, post.getBytes(StandardCharsets.UTF_8));
+        final String subString = content.substring(content.indexOf("servers:"));
+        final boolean matches = subString.contains("VanTes:");
+        System.out.println(subString + " " + matches);
     }
 }
