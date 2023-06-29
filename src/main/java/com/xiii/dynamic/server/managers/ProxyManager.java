@@ -5,12 +5,17 @@ import com.xiii.dynamic.server.DynamicServer;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ProxyManager {
 
@@ -38,6 +43,28 @@ public class ProxyManager {
         if (startPort != null) changeProxyPort(Integer.parseInt(startPort));
 
         instance.getLogger().log(Level.WARNING, "Server configured! You will have to restart your proxy to apply changes.");
+    }
+
+    public void fixProxy() throws IOException {
+        final Path path = Paths.get("D:\\Bureau\\Dynamic.Server\\config.yml"); //proxy config file
+        final String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+
+        final String servers = content.substring(content.indexOf("servers:"));
+        final Pattern r = Pattern.compile("(?<=address: ).*");
+        final Matcher m = r.matcher(servers);
+
+        while (m.find()) {
+            final int port = Integer.parseInt((m.group().substring(m.group().indexOf(":"))).replace(":", ""));
+            final String ip = m.group().substring(0, m.group().indexOf(":"));
+            try (Socket ignored = new Socket(ip, port)) {
+                instance.getLogger().log(Level.INFO, ip + ":" + port + " responded.");
+            } catch (final ConnectException | UnknownHostException e) {
+                instance.getLogger().log(Level.SEVERE, ip + ":" + port + " did not respond!");
+            }
+        }
+
+        //final String updatedContent = content.replace("md_5", "§").replace("- admin", "- §").replace("lobby", "§").replace("localhost:25565", "0:0").replace("restricted: false", "restricted: true").replace("&1Just another BungeeCord - Forced Host", "").replace("pvp.md-5.net: pvp", "§: §").replace("&1Another Bungee server", "A Minecraft Server");
+        //Files.write(configYml, updatedContent.getBytes(charset));
     }
 
     public void clearForcedSettings() throws IOException {
