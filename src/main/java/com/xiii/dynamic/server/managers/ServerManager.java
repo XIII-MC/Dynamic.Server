@@ -30,7 +30,7 @@ public class ServerManager {
         this.instance = instance;
     }
 
-    public void createServer(final int xmxRamMB, final String serverName, final String serverSoftware, final String serverVersion, final boolean autoConfig, String distantIP, int startPort) throws IOException {
+    public void createServer(final int xmxRamMB, final String serverName, final String serverSoftware, final String serverVersion, final boolean autoConfig, final boolean autoStart, String distantIP, int startPort) throws IOException {
 
         if (Objects.equals(distantIP, "DEFAULT")) {
             distantIP = "localhost";
@@ -214,9 +214,12 @@ public class ServerManager {
             instance.getLogger().log(Level.INFO, "Exporting done! The file was saved in the 'exported_servers' folder at the root of your proxy.");
         } else {
 
-            instance.getLogger().log(Level.INFO, "Setup finished! Starting server...");
+            if (autoStart) {
 
-            startServer(serverName);
+                instance.getLogger().log(Level.INFO, "Setup finished! Starting server...");
+
+                startServer(serverName);
+            } else instance.getLogger().log(Level.INFO, "Setup finished!");
         }
     }
 
