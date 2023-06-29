@@ -12,8 +12,6 @@ import java.util.logging.Level;
 public class CreateServer extends Command {
 
     private final DynamicServer instance;
-    private int tempStartPort = -1;
-    private String tempDistantIP = "DEFAULT";
 
     public CreateServer(final String name, final DynamicServer instance) {
         super(name);
@@ -25,7 +23,10 @@ public class CreateServer extends Command {
 
         if (sender.hasPermission("Dynamic.Server.CreateServer")) {
 
-            if (args.length >= 5) {
+            if (args.length >= 6) {
+
+                String tempDistantIP = "DEFAULT";
+                int tempStartPort = -1;
 
                 if (args[4].equalsIgnoreCase("false") || args[5].equalsIgnoreCase("false") || args[4].equalsIgnoreCase("true") || args[5].equalsIgnoreCase("true")) {
 
@@ -53,8 +54,6 @@ public class CreateServer extends Command {
                     instance.getLogger().log(Level.INFO, "Process finished in " + (System.currentTimeMillis() - startTime) + "ms!");
                 } else instance.getLogger().log(Level.SEVERE, "Wrong arguments! Usage: dcs.createServer <Xmx> <Name> <Server_software> <Server_version> !>>><auto_config><<<! !>>><auto_start><<<! (distant_ip) (start_port)");
             } else instance.getLogger().log(Level.SEVERE, "Wrong arguments! Usage: dcs.createServer <Xmx> <Name> <Server_software> <Server_version> <auto_config> <auto_start> (distant_ip) (start_port)");
-            tempStartPort = -1;
-            tempDistantIP = null;
         }
     }
 }
