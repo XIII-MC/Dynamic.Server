@@ -31,7 +31,7 @@ After that Dynamic.Server is ready for use, no configuration required!
 
 **Default Server**: The name of the server you should first get connected to when connecting to the proxy (e.g. Survival, My_Awesome_Server). <br />
 
-(Optional) *IP Forward*: If you want IP Forward to be enabled or not (true/false). <br />
+(Optional) *IP Forward*: If you want IP Forward to be enabled or not (allow or not players to directly connect to your linked servers without going through the proxy) (true/false). <br />
 (Optional) *Online Mode*: If you want your proxy to be on online mode or not (accept cracked accounts or not) (true/false). <br />
 (Optional) *Start Port*: From which port should Dynamic.Server try getting an available port (if the port is taken, it will try a higher port) (this changes both query and host ports). <br /><br />
 
